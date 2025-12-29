@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech Emotion Recognition</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎤 Speech Emotion Recognition</h1>
+            <p class="subtitle">Analyze your emotions through speech tone in real-time</p>
+        </header>
+
+        <main>
+            <!-- Recording Section -->
+            <section class="recording-section">
+                <div class="status-indicator" id="statusIndicator">
+                    <div class="status-dot"></div>
+                    <span id="statusText">Ready to record</span>
+                </div>
+
+                <div class="controls">
+                    <button id="recordBtn" class="btn btn-primary">
+                        <span class="btn-icon">🎙️</span>
+                        Start Recording
+                    </button>
+                    <button id="stopBtn" class="btn btn-danger" disabled>
+                        <span class="btn-icon">⏹️</span>
+                        Stop & Analyze
+                    </button>
+                </div>
+
+                <div class="recording-info" id="recordingInfo">
+                    <div class="timer" id="timer">00:00</div>
+                    <div class="audio-visualizer" id="visualizer">
+                        <canvas id="visualizerCanvas"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection">
+                <h2>Emotion Analysis</h2>
+
+                <div class="top-emotion" id="topEmotion">
+                    <div class="emotion-icon">😐</div>
+                    <div class="emotion-name">-</div>
+                    <div class="confidence">0%</div>
+                </div>
+
+                <div class="emotion-bars" id="emotionBars">
+                    <!-- Emotion bars will be inserted here -->
+                </div>
+            </section>
+
+            <!-- Info Section -->
+            <section class="info-section">
+                <h3>How to Use</h3>
+                <ol>
+                    <li>Click <strong>"Start Recording"</strong> and allow microphone access</li>
+                    <li>Speak naturally for a few seconds (express how you're feeling!)</li>
+                    <li>Click <strong>"Stop & Analyze"</strong> to see your emotion analysis</li>
+                    <li>View the emotion breakdown with confidence scores</li>
+                </ol>
+
+                <div class="emotions-legend">
+                    <h4>Emotions Detected:</h4>
+                    <div class="legend-grid">
+                        <div class="legend-item">
+                            <span class="emotion-emoji">😊</span>
+                            <span>Happy</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="emotion-emoji">😢</span>
+                            <span>Sad</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="emotion-emoji">😠</span>
+                            <span>Angry</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="emotion-emoji">😨</span>
+                            <span>Fear</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="emotion-emoji">🤢</span>
+                            <span>Disgust</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="emotion-emoji">😐</span>
+                            <span>Neutral</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="emotion-emoji">😲</span>
+                            <span>Surprise</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Real-time speech emotion recognition powered by Machine Learning</p>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
