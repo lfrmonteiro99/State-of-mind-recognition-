@@ -20,18 +20,21 @@ async def serve_frontend():
 
 
 if __name__ == "__main__":
+    # Get port from environment variable (for cloud deployments) or default to 8000
+    port = int(os.environ.get("PORT", 8000))
+
     print("=" * 60)
     print("🎤 Speech Emotion Recognition Server")
     print("=" * 60)
     print("\n✅ Server starting...")
-    print(f"🌐 Open your browser and go to: http://localhost:8000")
-    print(f"📡 API docs available at: http://localhost:8000/docs")
+    print(f"🌐 Open your browser and go to: http://localhost:{port}")
+    print(f"📡 API docs available at: http://localhost:{port}/docs")
     print("\n💡 Press Ctrl+C to stop the server\n")
 
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=8000,
+        port=port,
         reload=True,
         log_level="info"
     )

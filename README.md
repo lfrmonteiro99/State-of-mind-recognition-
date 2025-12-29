@@ -99,6 +99,33 @@ State-of-mind-recognition-/
 
 - `GET /` - Serves the web interface
 - `POST /predict-emotion` - Accepts audio data and returns emotion predictions
+- `GET /emotions` - List supported emotions
+- `GET /health` - Health check endpoint
+- `GET /docs` - Interactive API documentation
+
+## Deployment
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
+
+### Quick Deploy Options:
+
+**Railway (Recommended - Easiest):**
+```bash
+railway login
+railway init
+railway up
+```
+
+**Render:**
+- Connect GitHub repo at [render.com](https://render.com)
+- Auto-deploys using `render.yaml`
+
+**Vercel (Limited ML features):**
+```bash
+vercel --prod
+```
+
+**Note:** Vercel has package size limits. Use Railway or Render for full ML features.
 
 ## Future Enhancements
 
