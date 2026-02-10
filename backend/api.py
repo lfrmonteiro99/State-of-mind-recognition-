@@ -29,9 +29,9 @@ emotion_recognizer = EmotionRecognizer()
 emotion_recognizer.create_simple_demo_model()
 
 
-@app.get("/")
+@app.get("/api")
 async def root():
-    """Health check endpoint."""
+    """API health check endpoint."""
     return {
         "status": "online",
         "service": "Speech Emotion Recognition API",
