@@ -21,6 +21,16 @@
                     <span id="statusText">Ready to record</span>
                 </div>
 
+                <div class="analysis-mode">
+                    <label class="mode-toggle">
+                        <input type="checkbox" id="fullAnalysisMode">
+                        <span class="mode-label">
+                            <span class="mode-icon">🧠</span>
+                            Full Analysis (includes transcription + AI insights)
+                        </span>
+                    </label>
+                </div>
+
                 <div class="controls">
                     <button id="recordBtn" class="btn btn-primary">
                         <span class="btn-icon">🎙️</span>
@@ -55,15 +65,57 @@
                 </div>
             </section>
 
+            <!-- Full Analysis Section (shown only when Full Analysis mode) -->
+            <section class="full-analysis-section" id="fullAnalysisSection">
+                <h2>🧠 State of Mind Analysis</h2>
+
+                <!-- Transcription -->
+                <div class="analysis-card">
+                    <h3>📝 What You Said</h3>
+                    <div class="transcription-text" id="transcriptionText">
+                        Your transcription will appear here...
+                    </div>
+                </div>
+
+                <!-- Emotional Analysis -->
+                <div class="analysis-card">
+                    <h3>💭 Emotional Analysis</h3>
+                    <div class="analysis-content" id="emotionalAnalysis">
+                        Analyzing how your words relate to your emotional state...
+                    </div>
+                </div>
+
+                <!-- State of Mind -->
+                <div class="analysis-card">
+                    <h3>🎯 State of Mind</h3>
+                    <div class="analysis-content" id="stateOfMind">
+                        Assessing your current mental and emotional state...
+                    </div>
+                </div>
+
+                <!-- Advice -->
+                <div class="analysis-card advice-card">
+                    <h3>💡 Supportive Advice</h3>
+                    <div class="analysis-content" id="advice">
+                        Personalized advice based on your state...
+                    </div>
+                </div>
+            </section>
+
             <!-- Info Section -->
             <section class="info-section">
                 <h3>How to Use</h3>
                 <ol>
                     <li>Click <strong>"Start Recording"</strong> and allow microphone access</li>
                     <li>Speak naturally for a few seconds (express how you're feeling!)</li>
-                    <li>Click <strong>"Stop & Analyze"</strong> to see your emotion analysis</li>
-                    <li>View the emotion breakdown with confidence scores</li>
+                    <li><strong>Optional:</strong> Enable "Full Analysis" for transcription + AI insights</li>
+                    <li>Click <strong>"Stop & Analyze"</strong> to see results</li>
+                    <li>View your emotion analysis and personalized advice</li>
                 </ol>
+
+                <div class="info-note">
+                    <strong>💡 Full Analysis Mode:</strong> Get speech transcription + AI-powered insights about your state of mind with personalized advice. Takes a bit longer but provides deeper understanding.
+                </div>
 
                 <div class="emotions-legend">
                     <h4>Emotions Detected:</h4>

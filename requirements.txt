@@ -10,6 +10,10 @@ pydantic==2.5.0
 python-dotenv==1.0.0
 pydub==0.25.1
 
+# Full Analysis Features (optional - for transcription + AI insights)
+openai-whisper==20231117
+openai==0.28.1
+
 # TensorFlow removed for 3x faster deployment & better performance
 # Demo model uses heuristics, not TensorFlow
 # Add back if training custom models: tensorflow==2.15.0

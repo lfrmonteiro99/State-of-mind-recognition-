@@ -175,11 +175,15 @@ class EmotionRecognitionApp {
             // Create audio blob
             const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
 
+            // Check if full analysis mode is enabled
+            const fullAnalysisMode = document.getElementById('fullAnalysisMode').checked;
+
             // Send to backend
             const formData = new FormData();
             formData.append('audio', audioBlob, 'recording.webm');
 
-            const response = await fetch('/predict-emotion', {
+            const endpoint = fullAnalysisMode ? '/analyze-full' : '/predict-emotion';
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 body: formData
             });
@@ -190,7 +194,12 @@ class EmotionRecognitionApp {
             }
 
             const result = await response.json();
-            this.displayResults(result.data);
+
+            if (fullAnalysisMode) {
+                this.displayFullAnalysis(result);
+            } else {
+                this.displayResults(result.data);
+            }
 
         } catch (error) {
             console.error('Error processing recording:', error);
@@ -259,6 +268,31 @@ class EmotionRecognitionApp {
 
         // Smooth scroll to results
         this.resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    displayFullAnalysis(result) {
+        // Display emotion results first
+        this.displayResults(result.emotion);
+
+        // Display transcription
+        const transcriptionText = document.getElementById('transcriptionText');
+        transcriptionText.textContent = result.transcription.text || 'No transcription available';
+
+        // Display AI analysis
+        const emotionalAnalysis = document.getElementById('emotionalAnalysis');
+        const stateOfMind = document.getElementById('stateOfMind');
+        const advice = document.getElementById('advice');
+
+        emotionalAnalysis.textContent = result.analysis.emotional_analysis || 'Analyzing...';
+        stateOfMind.textContent = result.analysis.state_of_mind || 'Assessing...';
+        advice.textContent = result.analysis.advice || 'Generating advice...';
+
+        // Show full analysis section
+        const fullAnalysisSection = document.getElementById('fullAnalysisSection');
+        fullAnalysisSection.classList.add('active');
+
+        // Smooth scroll to full analysis
+        fullAnalysisSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 }
 

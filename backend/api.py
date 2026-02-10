@@ -10,6 +10,8 @@ import os
 
 from backend.audio_processor_fast import FastAudioProcessor
 from backend.emotion_model import EmotionRecognizer
+from backend.speech_transcriber import SpeechTranscriber
+from backend.mind_analyzer import MindAnalyzer
 
 
 app = FastAPI(title="Speech Emotion Recognition API")
@@ -27,6 +29,10 @@ app.add_middleware(
 audio_processor = FastAudioProcessor()
 emotion_recognizer = EmotionRecognizer()
 emotion_recognizer.create_simple_demo_model()
+
+# Initialize transcriber and analyzer (lazy loaded)
+transcriber = None
+analyzer = MindAnalyzer()
 
 
 @app.get("/api")
@@ -135,6 +141,102 @@ async def get_emotions():
         "emotions": emotion_recognizer.emotions,
         "count": len(emotion_recognizer.emotions)
     }
+
+
+@app.post("/analyze-full")
+async def analyze_full(audio: UploadFile = File(...)):
+    """
+    Full analysis: emotion detection + speech transcription + AI insights.
+
+    Args:
+        audio: Audio file (WAV, MP3, WebM, etc.)
+
+    Returns:
+        Complete analysis including emotions, transcription, and advice
+    """
+    global transcriber
+
+    try:
+        # Read and process audio (same as predict-emotion)
+        audio_bytes = await audio.read()
+        audio_data, sample_rate = None, None
+
+        try:
+            audio_data, sample_rate = sf.read(io.BytesIO(audio_bytes))
+        except (sf.LibsndfileError, RuntimeError):
+            try:
+                audio_segment = AudioSegment.from_file(
+                    io.BytesIO(audio_bytes),
+                    format="webm"
+                )
+                wav_io = io.BytesIO()
+                audio_segment.export(wav_io, format="wav")
+                wav_io.seek(0)
+                audio_data, sample_rate = sf.read(wav_io)
+            except Exception:
+                try:
+                    audio_segment = AudioSegment.from_file(io.BytesIO(audio_bytes))
+                    wav_io = io.BytesIO()
+                    audio_segment.export(wav_io, format="wav")
+                    wav_io.seek(0)
+                    audio_data, sample_rate = sf.read(wav_io)
+                except Exception as final_error:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"Unsupported audio format: {str(final_error)}"
+                    )
+
+        # Handle stereo
+        if len(audio_data.shape) > 1:
+            audio_data = np.mean(audio_data, axis=1)
+
+        # Validate
+        if len(audio_data) == 0:
+            raise HTTPException(status_code=400, detail="Empty audio file")
+
+        if len(audio_data) < sample_rate * 0.5:
+            raise HTTPException(
+                status_code=400,
+                detail="Audio too short. Please record at least 1 second."
+            )
+
+        # 1. Extract features and predict emotion
+        features = audio_processor.process_audio_buffer(audio_data, sample_rate)
+        emotion_results = emotion_recognizer.predict_emotion(features)
+
+        # 2. Transcribe speech
+        if transcriber is None:
+            transcriber = SpeechTranscriber(model_size="base")
+
+        transcription, language = transcriber.transcribe(audio_data, sample_rate)
+
+        # 3. Analyze state of mind
+        analysis = analyzer.analyze_state_of_mind(
+            transcription=transcription,
+            emotion=emotion_results['top_emotion'],
+            confidence=emotion_results['confidence'],
+            all_emotions=emotion_results['predictions']
+        )
+
+        return JSONResponse(content={
+            "success": True,
+            "emotion": emotion_results,
+            "transcription": {
+                "text": transcription,
+                "language": language
+            },
+            "analysis": analysis,
+            "audio_duration": len(audio_data) / sample_rate,
+            "sample_rate": sample_rate
+        })
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error in full analysis: {str(e)}"
+        )
 
 
 @app.get("/health")
