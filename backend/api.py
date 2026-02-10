@@ -8,7 +8,7 @@ from pydub import AudioSegment
 import tempfile
 import os
 
-from backend.audio_processor import AudioProcessor
+from backend.audio_processor_fast import FastAudioProcessor
 from backend.emotion_model import EmotionRecognizer
 
 
@@ -23,8 +23,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize processors
-audio_processor = AudioProcessor()
+# Initialize processors (using optimized fast version)
+audio_processor = FastAudioProcessor()
 emotion_recognizer = EmotionRecognizer()
 emotion_recognizer.create_simple_demo_model()
 

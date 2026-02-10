@@ -55,71 +55,63 @@ class EmotionRecognizer:
 
     def _demo_predict(self, features):
         """
-        Demo prediction using simple heuristics.
+        Demo prediction using simple heuristics (optimized for FastAudioProcessor).
         Replace with actual model.predict_proba() when trained.
         """
-        # Simple heuristic based on acoustic features
-        # Features approximate indices (based on audio_processor.py):
-        # 0-12: MFCC means
-        # 13-25: MFCC stds
-        # 26-37: Chroma means
-        # 38-39: Spectral centroid mean/std
-        # 40: Spectral rolloff
-        # 41: Spectral bandwidth
-        # 42-43: ZCR mean/std
-        # 44-45: RMS mean/std
-        # 46-47: Pitch mean/std
-        # 48: Tempo
+        # Feature layout from FastAudioProcessor (~20 features):
+        # 0-7: MFCC means (8)
+        # 8-15: MFCC stds (8)
+        # 16-17: RMS mean/std (2) - Energy/loudness
+        # 18: ZCR mean (1) - Noisiness
+        # 19: Spectral centroid mean (1) - Brightness
 
         probabilities = np.zeros(len(self.emotions))
 
-        if len(features) < 40:
+        if len(features) < 19:
             # Fallback if features incomplete
             probabilities[4] = 1.0  # neutral
             return self._format_predictions(probabilities)
 
-        # Energy/loudness indicators (RMS)
-        energy = features[44] if len(features) > 44 else 0.1
-        energy_std = features[45] if len(features) > 45 else 0.05
+        # Energy/loudness indicators (RMS) - now at index 16-17
+        energy = features[16] if len(features) > 16 else 0.1
+        energy_std = features[17] if len(features) > 17 else 0.05
 
-        # Pitch indicators
-        pitch_mean = features[46] if len(features) > 46 else 150
-        pitch_std = features[47] if len(features) > 47 else 20
+        # MFCC variance (proxy for pitch/tone variation)
+        mfcc_std_mean = np.mean(features[8:16]) if len(features) > 15 else 0.1
 
-        # Spectral indicators
-        spectral_centroid = features[38] if len(features) > 38 else 1000
-        zcr = features[42] if len(features) > 42 else 0.1
+        # Zero-crossing rate (noisiness) - now at index 18
+        zcr = features[18] if len(features) > 18 else 0.1
 
-        # Tempo
-        tempo = features[48] if len(features) > 48 else 120
+        # Spectral centroid (brightness) - now at index 19
+        spectral_centroid = features[19] if len(features) > 19 else 1000
 
-        # Simple rule-based classification for demo
-        # High energy + high pitch variance = angry
-        if energy > 0.15 and pitch_std > 30:
+        # Simple rule-based classification (optimized)
+        # High energy + high variance = angry
+        if energy > 0.15 and mfcc_std_mean > 0.15:
             probabilities[0] = 0.6  # angry
             probabilities[6] = 0.2  # surprise
             probabilities[4] = 0.2  # neutral
 
-        # Low energy + low pitch = sad
-        elif energy < 0.08 and pitch_mean < 180:
+        # Low energy = sad
+        elif energy < 0.08:
             probabilities[5] = 0.7  # sad
             probabilities[4] = 0.2  # neutral
             probabilities[2] = 0.1  # fear
 
-        # High pitch + moderate energy = happy
-        elif pitch_mean > 200 and energy > 0.1:
+        # High spectral centroid + moderate energy = happy
+        elif spectral_centroid > 2000 and energy > 0.1:
             probabilities[3] = 0.6  # happy
             probabilities[6] = 0.2  # surprise
             probabilities[4] = 0.2  # neutral
 
-        # High ZCR + variable pitch = fear
-        elif zcr > 0.15 and pitch_std > 25:
+        # High ZCR + variance = fear
+        elif zcr > 0.15 and mfcc_std_mean > 0.12:
             probabilities[2] = 0.5  # fear
             probabilities[6] = 0.3  # surprise
             probabilities[4] = 0.2  # neutral
 
-        # Fast tempo + high energy = surprise/happy
-        elif tempo > 140 and energy > 0.12:
+        # High energy + high spectral = surprise/happy
+        elif energy > 0.12 and spectral_centroid > 1800:
             probabilities[6] = 0.5  # surprise
             probabilities[3] = 0.3  # happy
             probabilities[4] = 0.2  # neutral

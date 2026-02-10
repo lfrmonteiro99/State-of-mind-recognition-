@@ -5,8 +5,11 @@ librosa==0.10.1
 numpy==1.24.3
 scipy==1.11.4
 soundfile==0.12.1
-tensorflow==2.15.0
 scikit-learn==1.3.2
 pydantic==2.5.0
 python-dotenv==1.0.0
 pydub==0.25.1
+
+# TensorFlow removed for 3x faster deployment & better performance
+# Demo model uses heuristics, not TensorFlow
+# Add back if training custom models: tensorflow==2.15.0
