@@ -25,30 +25,48 @@ git push origin claude/speech-emotion-recognition-2maeP
 
 ✅ Done? Move to step 4
 
-### 4️⃣ Fill the Form (2 mins)
+### 4️⃣ Deploy with Blueprint (1 click!)
 
-**Only fill these fields:**
+**You'll see:**
+```
+✓ render.yaml detected
+Blueprint: speech-emotion-recognition
+Instance: Starter ($7/month)
+
+[Deploy Blueprint]  or  [Apply]
+```
+
+**Just click "Deploy Blueprint" or "Apply"!**
+
+**That's it!** 🎉 All settings come from your render.yaml file:
+- ✓ Build command (auto-configured)
+- ✓ Start command (auto-configured)
+- ✓ Python version (auto-configured)
+- ✓ Health check (auto-configured)
+
+**No form to fill!** Render reads everything from render.yaml.
+
+✅ Done? Move to step 5
+
+---
+
+### 🤔 Don't See "Blueprint Detected"?
+
+If Render shows you a form instead, fill only these:
 
 ```
 Name: speech-emotion-recognition
 Branch: claude/speech-emotion-recognition-2maeP
-Build Command: pip install -r requirements.txt
-Start Command: uvicorn main:app --host 0.0.0.0 --port $PORT
 Instance Type: Starter ($7/month)
 ```
 
-**Click "Advanced"** and add:
-```
-Health Check Path: /health
-```
-
-**That's it!** Leave everything else as default.
+Leave Build/Start commands empty - they'll come from render.yaml!
 
 ✅ Done? Move to step 5
 
-### 5️⃣ Deploy! (Click Button)
-Click **"Create Web Service"** at the bottom
+---
 
+### 5️⃣ Wait for Deployment
 ⏳ **Wait 10-15 minutes** for first build
 
 ✅ When you see "Your service is live", you're done!
