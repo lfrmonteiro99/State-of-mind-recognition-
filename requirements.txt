@@ -9,10 +9,10 @@ scikit-learn==1.3.2
 pydantic==2.5.0
 python-dotenv==1.0.0
 pydub==0.25.1
-
-# Full Analysis Features (optional - for transcription + AI insights)
-openai-whisper==20231117
 openai==0.28.1
+
+# openai-whisper installed separately in Dockerfile to avoid build issues
+# If installing locally: pip install --no-build-isolation openai-whisper==20231117
 
 # TensorFlow removed for 3x faster deployment & better performance
 # Demo model uses heuristics, not TensorFlow

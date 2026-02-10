@@ -18,7 +18,10 @@ COPY requirements.txt .
 # Upgrade pip and setuptools to handle newer packages
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel
 
-# Install Python dependencies
+# Install openai-whisper separately with no build isolation to avoid pkg_resources issue
+RUN pip install --no-cache-dir --no-build-isolation openai-whisper==20231117
+
+# Install remaining dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
