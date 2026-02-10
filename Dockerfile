@@ -15,13 +15,11 @@ RUN apt-get update && apt-get install -y \
 # Copy requirements first for better caching
 COPY requirements.txt .
 
-# Upgrade pip and setuptools to handle newer packages
+# Upgrade pip and setuptools
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel
 
-# Install openai-whisper separately with no build isolation to avoid pkg_resources issue
-RUN pip install --no-cache-dir --no-build-isolation openai-whisper==20231117
-
-# Install remaining dependencies
+# Install Python dependencies
+# Note: openai-whisper has build issues in Docker, using faster-whisper instead
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code

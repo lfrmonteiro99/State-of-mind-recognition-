@@ -11,8 +11,8 @@ python-dotenv==1.0.0
 pydub==0.25.1
 openai==0.28.1
 
-# openai-whisper installed separately in Dockerfile to avoid build issues
-# If installing locally: pip install --no-build-isolation openai-whisper==20231117
+# Full Analysis Features - Using faster-whisper (better maintained, no build issues)
+faster-whisper==1.0.0
 
 # TensorFlow removed for 3x faster deployment & better performance
 # Demo model uses heuristics, not TensorFlow

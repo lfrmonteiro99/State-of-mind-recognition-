@@ -1,4 +1,4 @@
-import whisper
+from faster_whisper import WhisperModel
 import numpy as np
 import tempfile
 import os
@@ -6,7 +6,7 @@ from typing import Tuple, Optional
 
 
 class SpeechTranscriber:
-    """Transcribes speech using OpenAI Whisper."""
+    """Transcribes speech using faster-whisper (optimized OpenAI Whisper)."""
 
     def __init__(self, model_size: str = "base"):
         """
@@ -25,8 +25,9 @@ class SpeechTranscriber:
     def _load_model(self):
         """Load the Whisper model (lazy loading)."""
         try:
-            print(f"Loading Whisper {self.model_size} model...")
-            self.model = whisper.load_model(self.model_size)
+            print(f"Loading faster-whisper {self.model_size} model...")
+            # Use CPU for compatibility, int8 for speed/memory
+            self.model = WhisperModel(self.model_size, device="cpu", compute_type="int8")
             print("Whisper model loaded successfully")
         except Exception as e:
             print(f"Error loading Whisper model: {e}")
@@ -53,7 +54,7 @@ class SpeechTranscriber:
                 return "[Transcription unavailable - model not loaded]", None
 
         try:
-            # Whisper expects 16kHz audio
+            # faster-whisper expects 16kHz audio
             if sample_rate != 16000:
                 import librosa
                 audio_data = librosa.resample(
@@ -67,16 +68,21 @@ class SpeechTranscriber:
             if np.max(np.abs(audio_data)) > 0:
                 audio_data = audio_data / np.max(np.abs(audio_data))
 
-            # Transcribe
-            result = self.model.transcribe(
+            # Transcribe - faster-whisper returns segments
+            segments, info = self.model.transcribe(
                 audio_data,
-                fp16=False,  # Use FP32 for compatibility
-                language="en",  # Force English (or set to None for auto-detect)
-                task="transcribe"
+                language="en",  # Force English (or None for auto-detect)
+                task="transcribe",
+                beam_size=5,
+                vad_filter=True  # Voice activity detection
             )
 
-            transcription = result["text"].strip()
-            language = result.get("language", "en")
+            # Combine all segments
+            transcription = " ".join([segment.text for segment in segments]).strip()
+            language = info.language if hasattr(info, 'language') else "en"
+
+            if not transcription:
+                transcription = "[No speech detected]"
 
             return transcription, language
 
@@ -98,8 +104,10 @@ class SpeechTranscriber:
             return "[Transcription unavailable]", None
 
         try:
-            result = self.model.transcribe(audio_path)
-            return result["text"].strip(), result.get("language", "en")
+            segments, info = self.model.transcribe(audio_path, language="en")
+            transcription = " ".join([segment.text for segment in segments]).strip()
+            language = info.language if hasattr(info, 'language') else "en"
+            return transcription, language
         except Exception as e:
             print(f"Error transcribing file: {e}")
             return f"[Transcription error: {str(e)}]", None
