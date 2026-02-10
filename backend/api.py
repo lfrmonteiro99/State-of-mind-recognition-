@@ -4,6 +4,9 @@ from fastapi.responses import JSONResponse
 import numpy as np
 import io
 import soundfile as sf
+from pydub import AudioSegment
+import tempfile
+import os
 
 from backend.audio_processor import AudioProcessor
 from backend.emotion_model import EmotionRecognizer
@@ -51,8 +54,42 @@ async def predict_emotion(audio: UploadFile = File(...)):
         # Read audio file
         audio_bytes = await audio.read()
 
-        # Convert bytes to audio array
-        audio_data, sample_rate = sf.read(io.BytesIO(audio_bytes))
+        # Try to detect and convert audio format
+        audio_data, sample_rate = None, None
+
+        try:
+            # First, try direct reading with soundfile (WAV, FLAC, OGG)
+            audio_data, sample_rate = sf.read(io.BytesIO(audio_bytes))
+        except (sf.LibsndfileError, RuntimeError):
+            # If that fails, use pydub to convert from WebM/other formats
+            try:
+                # Detect format from content (WebM is common from browsers)
+                audio_segment = AudioSegment.from_file(
+                    io.BytesIO(audio_bytes),
+                    format="webm"
+                )
+
+                # Convert to WAV in memory
+                wav_io = io.BytesIO()
+                audio_segment.export(wav_io, format="wav")
+                wav_io.seek(0)
+
+                # Now read with soundfile
+                audio_data, sample_rate = sf.read(wav_io)
+
+            except Exception as e:
+                # Try without specifying format (let pydub detect)
+                try:
+                    audio_segment = AudioSegment.from_file(io.BytesIO(audio_bytes))
+                    wav_io = io.BytesIO()
+                    audio_segment.export(wav_io, format="wav")
+                    wav_io.seek(0)
+                    audio_data, sample_rate = sf.read(wav_io)
+                except Exception as final_error:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"Unsupported audio format. Please ensure microphone recording is working. Error: {str(final_error)}"
+                    )
 
         # Handle stereo audio (convert to mono)
         if len(audio_data.shape) > 1:
@@ -81,11 +118,9 @@ async def predict_emotion(audio: UploadFile = File(...)):
             "sample_rate": sample_rate
         })
 
-    except sf.LibsndfileError as e:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Invalid audio file format: {str(e)}"
-        )
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500,

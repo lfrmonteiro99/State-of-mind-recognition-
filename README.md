@@ -33,6 +33,12 @@ A real-time web application that recognizes emotions and state of mind through s
 
 - Python 3.8 or higher
 - pip package manager
+- FFmpeg (for audio format conversion)
+
+**Install FFmpeg:**
+- macOS: `brew install ffmpeg`
+- Ubuntu/Debian: `sudo apt-get install ffmpeg`
+- Windows: Download from [ffmpeg.org](https://ffmpeg.org/download.html) or use `choco install ffmpeg`
 
 ### Setup
 

@@ -5,8 +5,31 @@ Get your Speech Emotion Recognition app up and running in 5 minutes!
 ## Prerequisites
 
 - Python 3.8 or higher installed
+- **FFmpeg** installed (required for audio format conversion)
 - Microphone connected to your computer
 - Modern web browser (Chrome, Firefox, Safari, or Edge)
+
+### Installing FFmpeg
+
+**macOS:**
+```bash
+brew install ffmpeg
+```
+
+**Ubuntu/Debian:**
+```bash
+sudo apt-get update
+sudo apt-get install ffmpeg
+```
+
+**Windows:**
+1. Download from [ffmpeg.org](https://ffmpeg.org/download.html)
+2. Add to PATH environment variable
+
+Or use Chocolatey:
+```bash
+choco install ffmpeg
+```
 
 ## Installation Steps
 
