@@ -19,7 +19,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel
 
 # Install Python dependencies
-# Note: openai-whisper has build issues in Docker, using faster-whisper instead
+# Simple setup - no local ML models, uses OpenAI API for transcription
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code

@@ -206,7 +206,7 @@ async def analyze_full(audio: UploadFile = File(...)):
 
         # 2. Transcribe speech
         if transcriber is None:
-            transcriber = SpeechTranscriber(model_size="base")
+            transcriber = SpeechTranscriber()  # Uses OPENAI_API_KEY from env
 
         transcription, language = transcriber.transcribe(audio_data, sample_rate)
 
