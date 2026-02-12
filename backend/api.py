@@ -8,6 +8,17 @@ from pydub import AudioSegment
 import tempfile
 import os
 
+# Ensure pkg_resources is available (workaround for setuptools issues)
+try:
+    import pkg_resources
+except ImportError:
+    # If pkg_resources not available, try importing setuptools first
+    try:
+        import setuptools
+        import pkg_resources
+    except ImportError:
+        print("WARNING: pkg_resources not available. Some features may not work.")
+
 from backend.audio_processor_fast import FastAudioProcessor
 from backend.emotion_model import EmotionRecognizer
 from backend.speech_transcriber import SpeechTranscriber
