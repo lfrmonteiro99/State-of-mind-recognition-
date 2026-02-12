@@ -15,8 +15,8 @@ RUN apt-get update && apt-get install -y \
 # Copy requirements first for better caching
 COPY requirements.txt .
 
-# Upgrade pip and setuptools
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+# Upgrade pip and setuptools first (before requirements)
+RUN pip install --no-cache-dir --upgrade pip setuptools>=65.0.0 wheel
 
 # Install Python dependencies
 # Simple setup - no local ML models, uses OpenAI API for transcription
